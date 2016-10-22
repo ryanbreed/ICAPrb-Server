@@ -1,4 +1,4 @@
-#
+#!/ust/bin/env ruby
 require "bundler/setup"
 require "icaprb/server"
 require 'logger'
@@ -22,11 +22,11 @@ trap('SIGINT') { exit! 0 }
 # puts 'Server is running on port 11344. Press CTRL+C to exit...'
 
 # rfc 3507 variant
-options = {secure: true,
-           certificate: '../cert.pem',
-           key: '../key.pem',
-           tls_socket: false}
-s = ICAPServer.new('localhost',1344,options)
+#options = {secure: true,
+           #certificate: '../cert.pem',
+           #key: '../key.pem',
+           #tls_socket: false}
+s = ICAPServer.new('localhost',1344)
 puts 'Server is running on port 1344. Press CTRL+C to exit...'
 
 ########################################################################

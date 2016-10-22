@@ -8,3 +8,6 @@
 /spec/reports/
 /tmp/
 /html/
+/.idea/
+/vendor/bundle/
+/log/
