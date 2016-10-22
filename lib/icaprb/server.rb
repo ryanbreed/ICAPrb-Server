@@ -2,7 +2,7 @@ require 'icaprb/server/version'
 require 'openssl'
 require 'socket'
 require 'logger'
-
+require 'pry'
 require_relative './server/request_parser'
 require_relative './server/response'
 require_relative './server/services'

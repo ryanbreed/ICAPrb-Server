@@ -4,15 +4,33 @@ module ICAPrb
     module Services
       class RedisSniffer < ServiceBase
         # initializes the RedisSniffer - the name of the service is sniff
+        attr_accessor :redis, :prefix
         def initialize
           super('sniff',[:request_mod, :response_mod],1024,60,nil,nil,nil,1000)
           @timeout = nil
+          @prefix ||= 'icap:sniff'
+        end
+
+        def reqhdr_key
+          prefix + ':request:header'
+        end
+
+        def reqbody_key
+          prefix + ':request:body'
+        end
+
+        def reshdr_key
+          prefix + ':response:header'
+        end
+
+        def resbody_key
+          prefix + ':response:body'
         end
 
         # return the request to the client
         def process_request(icap_server,ip,socket,data)
           logger = icap_server.logger
-          logger.debug 'Start processing data via echo service...'
+          logger.debug 'start sniff request processing'
           response = ::ICAPrb::Server::Response.new
           response.icap_status_code = 200
           if data[:icap_data][:request_line][:icap_method] == :response_mod
@@ -22,7 +40,6 @@ module ICAPrb
             http_resp_header = data[:http_request_header]
             http_resp_body = data[:http_request_body]
           end
-
           http_resp_body << get_the_rest_of_the_data(socket) if http_resp_body && !(got_all_data? data)
           response.components << http_resp_header
           response.components << http_resp_body
@@ -31,7 +48,8 @@ module ICAPrb
             socket.write(http_resp_body.to_chunk)
             ::ICAPrb::Server::Response.send_last_chunk(socket,false)
           end
-          logger.debug 'Answered request in echo service'
+          redis.lpush(resbody_key,data[:http_response_body])
+          logger.debug 'end sniff request processing'
         end
       end
     end
